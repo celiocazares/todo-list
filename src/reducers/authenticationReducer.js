@@ -1,17 +1,14 @@
 import { authenticationTypes } from "../actionTypes/authenticationTypes"
 
-const INITIAL_STATE = {}
+const INITIAL_STATE = {loginLoading: false}
 
 const authenticationReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case authenticationTypes.LOGIN_REQUEST:
-            debugger
             return { ...state, loginLoading: true }
         case authenticationTypes.LOGIN_SUCCESS:
-            debugger
             return { ...state, loginLoading: false }
         case authenticationTypes.LOGIN_FAILURE:
-            debugger
             return { ...state, loginLoading: false }
         default:
             return state

@@ -5,6 +5,7 @@ import Login from './Pages/users/login';
 
 import { Switch, Route } from 'react-router-dom';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+import MenuApp from './components/Menu';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
 
   return (
     <div className="App">
+      <MenuApp />
       <Switch>
         <Route path="/users" component={Users} />
       </Switch>

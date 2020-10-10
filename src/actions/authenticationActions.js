@@ -12,7 +12,10 @@ const login = (params, callback) => {
 					dispatch(success(users))
 					if (callback) callback()
 				},
-				error => apiHelpers.handleError(error)
+				error => {
+					apiHelpers.handleError(error)
+					dispatch(failure(error))	
+				} 
 			).catch(error => {
 				dispatch(failure(error));
 			});
