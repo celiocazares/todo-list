@@ -1,4 +1,4 @@
-import { Button, Drawer, Input, Table } from 'antd';
+import { Button, Drawer, Input, Popconfirm, Table } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { usersActions } from "../../actions/usersActions";
@@ -7,6 +7,7 @@ import { usersActions } from "../../actions/usersActions";
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { isNotData } from '../../helpers/utils';
 
 const UserWrap = styled.div`
   input {
@@ -47,8 +48,34 @@ const Users = () => {
 
   useEffect(() => {
     setUserData({ ...userData, name: user?.name })
-    debugger
   }, [user, isUpdating]);
+
+  const callBack = () => {
+    handleDrawer(false)
+    dispatch(usersActions.fetchUsers())
+  }
+
+  const insertUser = () => {
+    const request = { ...userData };
+    if ((request.password !== request.confirmPassword) || isNotData(request.name) || isNotData(request.password)) return;
+    delete request.confirmPassword;
+
+    dispatch(usersActions.insertUser(request, () => callBack()))
+  }
+
+  const handleDelete = (record) => {
+    debugger
+    dispatch(usersActions.deleteUser(record.public_id, () => callBack()))
+  }
+
+
+  const updateUser = () => {
+    const request = { ...userData, public_id: user.public_id };
+    if ((request.password !== request.confirmPassword) || isNotData(request.name) || isNotData(request.password)) return;
+    delete request.confirmPassword;
+
+    dispatch(usersActions.updateUser(request, () => callBack()))
+  }
 
 
 
@@ -56,7 +83,15 @@ const Users = () => {
     return (
       <>
         <Button loading={userLoading} onClick={() => handleUpdateDrawer(record)} shape="circle" type="primary" icon={<FontAwesomeIcon icon={faEdit} />}></Button>
-        <Button loading={userLoading} danger shape="circle" type="primary" icon={<FontAwesomeIcon icon={faTrash} />}></Button>
+        <Popconfirm
+          title="Are you sure delete this task?"
+          onConfirm={() => handleDelete(record)}
+          // onCancel={cancel}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button loading={userLoading} danger shape="circle" type="primary" icon={<FontAwesomeIcon icon={faTrash} />}></Button>
+        </Popconfirm>
       </>
     )
   }
@@ -84,6 +119,7 @@ const Users = () => {
       render: actionButtons
     },
   ]
+
   return (
     <>
       <h1>Users <Button onClick={() => setDrawer(!drawerActivated)} type="primary" shape="circle" > + </Button></h1>
@@ -101,6 +137,7 @@ const Users = () => {
           <Input name="name" onChange={handleInputs} value={userData.name} placeholder="Inform user name" />
           <Input name="password" onChange={handleInputs} type="password" value={userData.password} placeholder="Inform user password" />
           <Input name="confirmPassword" onChange={handleInputs} type="password" value={userData.confirmPassword} placeholder="Confirm user password" />
+          <Button type="primary" loading={usersLoading} onClick={isUpdating ? updateUser : insertUser}>{isUpdating ? "Update" : "Insert"}</Button>
         </UserWrap>
 
       </Drawer>

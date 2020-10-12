@@ -26,7 +26,7 @@ const fetchUserById = (id, callBack) => {
       .then(
         user => {
           dispatch(success(user));
-          if(callBack) callBack();
+          if (callBack) callBack();
         },
         error => apiHelpers.handleError(error)
       ).catch(error => {
@@ -39,15 +39,81 @@ const fetchUserById = (id, callBack) => {
   function failure(error) { return { type: usersActionTypes.FETCH_USER_BY_ID_FAILURE, error } }
 }
 
-const addUsers = response => ({
-  type: 'ADD_USER',
-  response
-})
+const insertUser = (params, callback) => {
+  return dispatch => {
+    dispatch(request());
+    usersHandler.insert(params)
+      .then(
+        user => {
+          dispatch(success(user))
+          if (callback) callback()
+        },
+        error => {
+          apiHelpers.handleError(error)
+          dispatch(failure(error))
+        }
+      ).catch(error => {
+        dispatch(failure(error));
+      });
+  };
+
+  function request() { return { type: usersActionTypes.INSERT_REQUEST } }
+  function success(user) { return { type: usersActionTypes.INSERT_SUCCESS, user } }
+  function failure(error) { return { type: usersActionTypes.INSERT_FAILURE, error } }
+}
+
+const updateUser = (params, callback) => {
+  return dispatch => {
+    dispatch(request());
+    usersHandler.update(params)
+      .then(
+        user => {
+          dispatch(success(user))
+          if (callback) callback()
+        },
+        error => {
+          apiHelpers.handleError(error)
+          dispatch(failure(error))
+        }
+      ).catch(error => {
+        dispatch(failure(error));
+      });
+  };
+
+  function request() { return { type: usersActionTypes.UPDATE_REQUEST } }
+  function success(user) { return { type: usersActionTypes.UPDATE_SUCCESS, user } }
+  function failure(error) { return { type: usersActionTypes.UPDATE_FAILURE, error } }
+}
+
+const deleteUser = (id, callback) => {
+  return dispatch => {
+    dispatch(request());
+    usersHandler.deleteUser(id)
+      .then(
+        user => {
+          dispatch(success(user))
+          if (callback) callback()
+        },
+        error => {
+          apiHelpers.handleError(error)
+          dispatch(failure(error))
+        }
+      ).catch(error => {
+        dispatch(failure(error));
+      });
+  };
+
+  function request() { return { type: usersActionTypes.DELETE_REQUEST } }
+  function success(user) { return { type: usersActionTypes.DELETE_SUCCESS, user } }
+  function failure(error) { return { type: usersActionTypes.DELETE_FAILURE, error } }
+}
 
 export const usersActions = {
   fetchUsers,
   fetchUserById,
-  addUsers
+  insertUser,
+  updateUser,
+  deleteUser
 };
 
 
